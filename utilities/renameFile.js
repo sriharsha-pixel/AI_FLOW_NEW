@@ -8,7 +8,7 @@ async function renameFile(page,element,rename){
     console.log("file is",fileName);
     console.log("extension is ",extension);
     console.log("new file name is ",newfileName);
-    return newfileName;
+    return newfileName
 }
 
 async function invalidrenameFile(page,element,rename){
