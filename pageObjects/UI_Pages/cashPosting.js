@@ -1106,7 +1106,7 @@ exports.CashPosting = class CashPosting {
             Amount: data2,
             TypeCode: "",
             Description: "",
-            Status: "",
+            BankAccount: "",
             
         })
         writeDataToExcel(path, "NDCSweeps", tableData);
@@ -1172,12 +1172,12 @@ exports.CashPosting = class CashPosting {
                 Test_Amount: testRow?.Amount || "Missing",
                 Test_TypeCode: testRow?.TypeCode || "Missing",
                 Test_Description: testRow?.Description || "Missing",
-                Test_Status: testRow?.Status || "Missing",
+                Test_BankAccount: testRow?.BankAccount || "Missing",
                 Prod_Date: prodRow?.Date || "Missing",
                 Prod_Amount: prodRow?.Amount || "Missing",
                 Prod_TypeCode: prodRow?.TypeCode || "Missing",
                 Prod_Description: prodRow?.Description || "Missing",
-                Prod_Status: prodRow?.Status || "Missing",
+                Prod_BankAccount: prodRow?.BankAccount || "Missing",
             });
             continue;
         }
@@ -1190,12 +1190,12 @@ exports.CashPosting = class CashPosting {
                     Test_Amount: testRow?.Amount || "Missing",
                     Test_TypeCode: testRow?.TypeCode || "Missing",
                     Test_Description: testRow?.Description || "Missing",
-                    Test_Status: testRow?.Status || "Missing",
+                    Test_BankAccount: testRow?.BankAccount || "Missing",
                     Prod_Date: prodRow?.Date || "Missing",
                     Prod_Amount: prodRow?.Amount || "Missing",
                     Prod_TypeCode: prodRow?.TypeCode || "Missing",
                     Prod_Description: prodRow?.Description || "Missing",
-                    Prod_Status: prodRow?.Status || "Missing",
+                    Prod_BankAccount: prodRow?.BankAccount || "Missing",
                 });
             }
         });
