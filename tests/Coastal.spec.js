@@ -51,7 +51,6 @@ test("Getting summary and Matched Transaction details from Stage Env",async({pag
     await page.reload();
     await page.waitForTimeout(parseInt(process.env.mediumWait));
     await cashPosting.clickOnFirstCard();
-    await cashPosting.totalTransaction.waitFor({state:'visible'});
     await cashPosting.writingBankFeedSummaryTest(testEnvDatareload);
     await cashPosting.writingBankBillingSystemAnalysisTest(testEnvDatareload);
     await cashPosting.writingBankBillingSystemAnalysisTotalMatchesFoundTest(testEnvDatareload);

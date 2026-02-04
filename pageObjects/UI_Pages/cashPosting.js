@@ -103,11 +103,10 @@ exports.CashPosting = class CashPosting {
     }
 
     clickOnFirstCard=async()=>{
-        await this.cashPostinggetStartedBtn.waitFor({ state: 'visible' });
-        await this.clickOnCashPostingBtn();
         await this.noReconciltext.waitFor({ state: 'hidden' });
         await this.page.waitForTimeout(parseInt(process.env.smallWait));
         await excuteSteps(this.test,this.firstcard,"click",`Clicking on first card`);
+        await this.totalTransaction.waitFor({ state: 'visible' });
     }
 
     scrollTillRunReconsillationBtn=async()=>{
