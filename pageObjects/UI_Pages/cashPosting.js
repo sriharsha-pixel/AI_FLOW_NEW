@@ -15,7 +15,7 @@ exports.CashPosting = class CashPosting {
         this.test=test;
         this.page=page;
         this.lbl_NoTransactions=page.locator("//div[contains(text(),'No transactions to display')]");
-        this.firstcard=page.locator("(//div[@data-radix-scroll-area-content]/div/div)[1]");
+        this.firstcard=page.locator("(//div[@data-radix-scroll-area-viewport]/div/div/div)[1]");
         this.cashPostinggetStartedBtn=page.locator("//h3[text()='Cash Posting Reconciliation']/following::button[1]");
         this.bankStatementFileUploadBtn=page.locator("//input[@id='bank-file-input']");
         this.rfmsFileUploadBtn=page.locator("//input[@id='rfms-file-input']");
@@ -104,7 +104,7 @@ exports.CashPosting = class CashPosting {
 
     clickOnFirstCard=async()=>{
         await this.noReconciltext.waitFor({ state: 'hidden' });
-        await this.page.waitForTimeout(parseInt(process.env.smallWait));
+        await this.page.waitForTimeout(parseInt(process.env.mediumWait));
         await excuteSteps(this.test,this.firstcard,"click",`Clicking on first card`);
         await this.totalTransaction.waitFor({ state: 'visible' });
     }
