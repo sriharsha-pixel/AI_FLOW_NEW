@@ -19,9 +19,10 @@ test("Mark as Billing Exception", async ({ page }) => {
     for (let i = 0; i < cardCount; i++) {
         await cashPosting.reconciliationCards.nth(i).click();
 
-        const details = await cashPosting.markAsBillingException(reasonForException);
-        if (details) {
-            return; // exit loop once marked exception
+        const transactionDetails = await cashPosting.markAsBillingException(reasonForException);
+        if (transactionDetails) {
+            console.log(`Marked as Billing Exception`)
+            return;
         }
     }
 })
@@ -32,12 +33,11 @@ test("Bulk Mark as Billing Exception", async ({ page }) => {
     const cardCount = await cashPosting.reconciliationCards.count();
     for (let i = 0; i < cardCount; i++) {
         await cashPosting.reconciliationCards.nth(i).click();
-        const bulkMarked = await cashPosting.bulkMarkAsBillingException(reasonForException);
-        if (bulkMarked) {
-            // If Exceptions were successfully bulk marked, exit the loop
+
+        const numOfTransactions = await cashPosting.bulkMarkAsBillingException(reasonForException);
+        if (numOfTransactions) {
+            console.log(`Bulk marked ${numOfTransactions} transactions as Billing Exception`);
             return;
-        } else {
-            continue; // Continue to next card if bulk Exception was not done
         }
     }
 })

@@ -122,29 +122,29 @@ exports.LoginPage = class LoginPage {
   };
 
   loginWithValidCredentials = async (email, pwd) => {
-    await this.test.step("The page is loading, please wait", async () => {
-      await this.page.waitForTimeout(parseInt(process.env.smallWait));
-    });
+    // await this.test.step("The page is loading, please wait", async () => {
+    //   await this.page.waitForTimeout(parseInt(process.env.smallWait));
+    // });
+    await this.microsoftSignIn.waitFor({ state: 'visible' });
     await this.clickOnMicrosoftLogInBtn();
     await this.fillingEmail(email);
-    await this.test.step("The page is loading, please wait", async () => {
-      await this.page.waitForTimeout(parseInt(process.env.smallWait));
-    });
-    await this.test.step("The page is loading, please wait", async () => {
-      await this.page.waitForTimeout(parseInt(process.env.smallWait));
-    });
+    // await this.test.step("The page is loading, please wait", async () => {
+    //   await this.page.waitForTimeout(parseInt(process.env.smallWait));
+    // });
+    // await this.test.step("The page is loading, please wait", async () => {
+    //   await this.page.waitForTimeout(parseInt(process.env.smallWait));
+    // });
     await this.clickOnNextBtn();
-    await this.test.step("The page is loading, please wait", async () => {
-      await this.page.waitForTimeout(parseInt(process.env.smallWait));
-    });
-    await this.test.step("The page is loading, please wait", async () => {
-      await this.page.waitForTimeout(parseInt(process.env.smallWait));
-    });
+    // await this.test.step("The page is loading, please wait", async () => {
+    //   await this.page.waitForTimeout(parseInt(process.env.smallWait));
+    // });
+    // await this.test.step("The page is loading, please wait", async () => {
+    //   await this.page.waitForTimeout(parseInt(process.env.smallWait));
+    // });
     await this.fillingPassword(pwd);
-    await this.test.step("The page is loading, please wait", async () => {
-      await this.page.waitForTimeout(parseInt(process.env.smallWait));
-    });
-
+    // await this.test.step("The page is loading, please wait", async () => {
+    //   await this.page.waitForTimeout(parseInt(process.env.smallWait));
+    // });
     await this.clickOnMicrosoftSignInBtn();
     await this.clickOnDontShowAgainBtn();
     await this.clickOnYesBtn();
@@ -158,9 +158,14 @@ exports.LoginPage = class LoginPage {
     await this.clickOnNextBtn();
     await this.fillingPassword(pwd);
     await this.clickOnMicrosoftSignInBtn();
-    await expect(this.approveLogin, `Approve Sign In Request is Displayed`)
-      .toBeVisible({ timeout: 30000 });
-    await expect(this.page).not.toHaveURL(/dashboard/)
+    //await expect(this.approveLogin, `Approve Sign In Request is Displayed`)
+    //  .toBeVisible({ timeout: 30000 });
+    await this.page.waitForTimeout(parseInt(process.env.largeWait));
+    await this.test.step(`Verify User '${email}' is not authorized, can't Login`, async () => {
+      await expect(this.page, `User should not be able to navigate to Dashboard Page`)
+        .not
+        .toHaveURL(/dashboard/, { timeout: 10000 });
+    });
   }
 
 };

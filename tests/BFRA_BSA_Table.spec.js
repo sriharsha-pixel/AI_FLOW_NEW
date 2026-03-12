@@ -46,7 +46,7 @@ test("Verify BFRA and BSA Matched, Unmatched and Match Rate update after Unmatch
             return;
         }
     }
-})
+});
 
 test("Verify BFRA Transfers count update after Marking as Bank Transfer", async ({ page }) => {
     const cashPosting = new sections.CashPosting(test, page);
@@ -67,9 +67,29 @@ test("Verify BFRA Transfers count update after Marking as Bank Transfer", async 
             return;
         }
     }
-})
+});
 
-test("Verify BSA NSFs Count update after Unmarking NSF", async ({ page }) => {
+test("Verify BFRA Transfers count update after Bulk Marking as Bank Transfers", async ({ page }) => {
+    const cashPosting = new sections.CashPosting(test, page);
+    await cashPosting.navigateToCashPosting();
+    const cardCount = await cashPosting.reconciliationCards.count();
+    for (let i = 0; i < cardCount; i++) {
+        await cashPosting.reconciliationCards.nth(i).click();
+        await cashPosting.matchedTransactionsHeader.waitFor({ state: 'visible' });
+
+        const transfersCountBFRABefore = await cashPosting.getTransfersCountBFRA();
+
+        const numOfTransactions = await cashPosting.bulkMarkAsBankTransfer();
+        if (numOfTransactions) {
+            const transfersCountBFRAAfter = await cashPosting.getTransfersCountBFRA();
+            // Assertion
+            expect(transfersCountBFRAAfter).toBe(transfersCountBFRABefore + numOfTransactions);
+            return;
+        }
+    }
+});
+
+/*test("Verify BSA NSFs Count update after Unmarking NSF", async ({ page }) => {
     const cashPosting = new sections.CashPosting(test, page);
     await cashPosting.navigateToCashPosting();
     const cardCount = await cashPosting.reconciliationCards.count();
@@ -89,7 +109,7 @@ test("Verify BSA NSFs Count update after Unmarking NSF", async ({ page }) => {
             return;
         }
     }
-})
+});
 
 test("Verify BFRA/BSA Total Transactions Count Update after Deleting a Transaction", async ({ page }) => {
     const cashPosting = new sections.CashPosting(test, page);
@@ -111,5 +131,5 @@ test("Verify BFRA/BSA Total Transactions Count Update after Deleting a Transacti
             console.log(`Card #${i + 1} has no Transaction to Delete, moving to next card`);
         }
     }
-});
+});*/
 

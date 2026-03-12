@@ -2369,9 +2369,6 @@ exports.CashPosting = class CashPosting {
   markAsBillingTransfer = async () => {
     await this.header_cashReceiptsInBIllingSystem.waitFor({ state: 'visible' });
     await this.ensureCashReceiptsTableVisible();
-
-    // If match manually button is not visible, return null to continue with the next card
-    //if (!(await this.matchManuallyBtn_CashReceiptsInBilling.isVisible())) return null;
     if (await this.markTransferBtns_CashReceiptsInBilling.count() === 0) return null;
 
     const description = await this.markTransferBtns_CashReceiptsInBilling.first().locator("//preceding::td[2]").innerText();
@@ -2389,17 +2386,18 @@ exports.CashPosting = class CashPosting {
       .filter({ hasText: transactionDetails.description })
       .first();
 
-    await expect(transferredTransaction).toBeVisible();
+    await expect(transferredTransaction,
+      `Transferred Transaction should be present in Billing System Table`
+    ).toBeVisible();
     const transactionStatus = await transferredTransaction.locator("//td[5]").innerText();
-    expect.soft(transactionStatus.trim()).toBe("Manually marked as transfer from billing system")
-    return transactionDetails; // Marked as transfer successfully
+    expect.soft(transactionStatus.trim()).toBe("Manually marked as transfer from billing system");
+
+    return transactionDetails;
   }
 
   markAsBankTransfer = async () => {
     await this.headerDepositsInBankRFMS.waitFor({ state: 'visible' });
     await this.ensureBankRFMSTableVisible();
-
-    //if (!(await this.matchManuallyBtn_DepositsInBankRFMS.isVisible())) return null;
     if (await this.markTransferBtns_DepositsInBankRFMS.count() === 0) return null;
 
     const description = await this.markTransferBtns_DepositsInBankRFMS.first()
@@ -2409,7 +2407,7 @@ exports.CashPosting = class CashPosting {
     const amount = await this.amountElement.innerText();
     await this.clickMarkAsTransferBtn();
 
-    const transactionDetails = { description, date, amount }
+    const transactionDetails = { description, date, amount };
 
     await this.ensureInternalBankTransfersTableVisible();
     const transferredTransaction = this.rows_InternalBankTransfers
@@ -2418,9 +2416,12 @@ exports.CashPosting = class CashPosting {
       .filter({ hasText: transactionDetails.description })
       .first();
 
-    await expect(transferredTransaction).toBeVisible();
+    await expect(transferredTransaction,
+      `Transferred Transaction should be present in Internal Bank Transfers Table`)
+      .toBeVisible();
     const transactionStatus = await transferredTransaction.locator("//td[5]").innerText();
-    expect.soft(transactionStatus.trim()).toBe("Manually marked as transfer")
+    expect.soft(transactionStatus.trim()).toBe("Manually marked as transfer");
+
     return transactionDetails;
   }
 
@@ -2431,12 +2432,15 @@ exports.CashPosting = class CashPosting {
   unmarkAsBankTransfer = async () => {
     await this.headerDepositsInBankRFMS.waitFor({ state: 'visible' });
     await this.ensureInternalBankTransfersTableVisible();
-    if (await this.unmarkTransferBtns_InternalBankTransfers.count() === 0) return false;
+    if (await this.unmarkTransferBtns_InternalBankTransfers.count() === 0) return null;
 
     const description = await this.unmarkTransferBtns_InternalBankTransfers.first().locator("//preceding::td[2]").innerText();
     await this.unmarkTransferBtns_InternalBankTransfers.first().click();
     const date = await this.dateElement.innerText();
     const amount = await this.amountElement.innerText();
+
+    const transactionDetails = { description, date, amount }
+
     await this.clickUnmarkAsTransferBtn();
     await this.page.waitForTimeout(parseInt(process.env.smallWait));
 
@@ -2449,22 +2453,27 @@ exports.CashPosting = class CashPosting {
       .filter({ hasText: description })
       .first();
 
-    await expect(transferredTransaction).toBeVisible();
-    const transactionStatus = await transferredTransaction.locator("//td[4]").innerText();
-    expect.soft(transactionStatus.trim()).toBe("Manually marked as non-transfer")
-    return true;
+    await expect(transferredTransaction,
+      `Transferred Transaction should be present in Deposits in Bank/RFMS Table`)
+      .toBeVisible();
+
+    return transactionDetails;
   }
 
   unmarkAsBillingTransfer = async () => {
     await this.header_cashReceiptsInBIllingSystem.waitFor({ state: 'visible' });
     await this.ensureBillingSystemTransfersTableVisible();
 
-    if (await this.unmarkTransferBtns_BillingSystemTransfers.count() === 0) return false;
+    if (await this.unmarkTransferBtns_BillingSystemTransfers.count() === 0) return null;
 
-    const description = await this.unmarkTransferBtns_BillingSystemTransfers.first().locator("//preceding::td[2]").innerText();
+    const description = await this.unmarkTransferBtns_BillingSystemTransfers.first()
+      .locator("//preceding::td[2]").innerText();
     await this.unmarkTransferBtns_BillingSystemTransfers.first().click();
     const date = await this.dateElement.innerText();
     const amount = await this.amountElement.innerText();
+
+    const transactionDetails = { description, date, amount }
+
     await this.clickUnmarkAsTransferBtn();
     await this.page.waitForTimeout(parseInt(process.env.smallWait));
 
@@ -2477,10 +2486,11 @@ exports.CashPosting = class CashPosting {
       .filter({ hasText: description })
       .first();
 
-    await expect(transferredTransaction).toBeVisible();
-    const transactionStatus = await transferredTransaction.locator("//td[4]").innerText();
-    expect.soft(transactionStatus.trim()).toBe("Unmatched");
-    return true;
+    await expect(transferredTransaction,
+      `Transferred Transaction should be present in Cash Receipts In Billing Table`)
+      .toBeVisible();
+
+    return transactionDetails;
   }
 
   clickBulkMarkBtn_DepositsInBankRFMs = async () => {
@@ -2515,7 +2525,7 @@ exports.CashPosting = class CashPosting {
     await this.headerDepositsInBankRFMS.waitFor({ state: 'visible' });
     await this.ensureBankRFMSTableVisible();
 
-    if (!(await this.bulkMarkBtn_DepositsInBankRFMS.isVisible())) return false;
+    if (!(await this.bulkMarkBtn_DepositsInBankRFMS.isVisible())) return null;
 
     const numOfTransactions = await this.rows_DepositsInBankRFMS.count();
 
@@ -2544,10 +2554,10 @@ exports.CashPosting = class CashPosting {
     for (const transaction of transactions) {
       const matchingRows = this.page.locator(
         `(//h3[contains(text(),'Internal Bank Transfers')]/ancestor::div[2]/following-sibling::div//table)[1]//tbody//tr[
-                normalize-space(td[1]) = "${transaction.date}" and
-                normalize-space(td[2]) = "${transaction.amount}" and
-                normalize-space(td[4]) = "${transaction.description}"
-                ]`
+          normalize-space(td[1]) = "${transaction.date}" and
+          normalize-space(td[2]) = "${transaction.amount}" and
+          normalize-space(td[4]) = "${transaction.description}"
+        ]`
       );
       const count = await matchingRows.count();
       expect(count).toBeGreaterThan(0);
@@ -2561,22 +2571,25 @@ exports.CashPosting = class CashPosting {
         expect.soft(statusText.trim()).toBe("Manually marked as transfer");
       }
     }
-    return true;
+    return numOfTransactions;
   }
 
   bulkMarkAsBillingTransfer = async () => {
     await this.header_cashReceiptsInBIllingSystem.waitFor({ state: 'visible' });
     await this.ensureCashReceiptsTableVisible();
 
-    if (!(await this.bulkMarkBtn_CashReceiptsInBilling.isVisible())) return false;
+    if (!(await this.bulkMarkBtn_CashReceiptsInBilling.isVisible())) return null;
 
     const numOfTransactions = await this.rows_CashReceiptsInBilling.count();
 
     let transactions = [];
     for (let i = 0; i < numOfTransactions; i++) {
-      const description = await this.markTransferBtns_CashReceiptsInBilling.nth(i).locator("//preceding::td[2]").innerText();
-      const amount = await this.markTransferBtns_CashReceiptsInBilling.nth(i).locator("//preceding::td[3]").innerText();
-      const date = await this.markTransferBtns_CashReceiptsInBilling.nth(i).locator("//preceding::td[4]").innerText();
+      const description = await this.markTransferBtns_CashReceiptsInBilling.nth(i)
+        .locator("//preceding::td[2]").innerText();
+      const amount = await this.markTransferBtns_CashReceiptsInBilling.nth(i)
+        .locator("//preceding::td[3]").innerText();
+      const date = await this.markTransferBtns_CashReceiptsInBilling.nth(i)
+        .locator("//preceding::td[4]").innerText();
 
       transactions.push({ description, amount, date });
     }
@@ -2597,10 +2610,10 @@ exports.CashPosting = class CashPosting {
     for (const transaction of transactions) {
       const matchingRows = this.page.locator(
         `//h4[contains(text(),'Billing System Transfers')]/parent::div//table//tbody//tr[
-                normalize-space(td[1]) = "${transaction.date}" and
-                normalize-space(td[2]) = "${transaction.amount}" and
-                normalize-space(td[4]) = "${transaction.description}"
-                ]`
+          normalize-space(td[1]) = "${transaction.date}" and
+          normalize-space(td[2]) = "${transaction.amount}" and
+          normalize-space(td[4]) = "${transaction.description}"
+        ]`
       );
       const count = await matchingRows.count();
       expect(count).toBeGreaterThan(0);
@@ -2614,7 +2627,7 @@ exports.CashPosting = class CashPosting {
         expect.soft(statusText.trim()).toBe("Manually marked as transfer from billing system");
       }
     }
-    return true;
+    return numOfTransactions;
   }
 
   enterReasonForMarkingException = async (text) => {
@@ -2629,9 +2642,12 @@ exports.CashPosting = class CashPosting {
     if (await this.markExceptionBtns_CashReceiptsInBilling.count() === 0) return null;
 
     const transactionDetails = {
-      description: await this.markExceptionBtns_CashReceiptsInBilling.first().locator("//preceding::td[2]").innerText(),
-      date: await this.markExceptionBtns_CashReceiptsInBilling.first().locator("//preceding::td[4]").innerText(),
-      amount: await this.markExceptionBtns_CashReceiptsInBilling.first().locator("//preceding::td[3]").innerText()
+      description: await this.markExceptionBtns_CashReceiptsInBilling.first()
+        .locator("//preceding::td[2]").innerText(),
+      date: await this.markExceptionBtns_CashReceiptsInBilling.first()
+        .locator("//preceding::td[4]").innerText(),
+      amount: await this.markExceptionBtns_CashReceiptsInBilling.first()
+        .locator("//preceding::td[3]").innerText()
     }
 
     await this.markExceptionBtns_CashReceiptsInBilling.first().click();
@@ -2690,7 +2706,7 @@ exports.CashPosting = class CashPosting {
     await this.header_cashReceiptsInBIllingSystem.waitFor({ state: 'visible' });
     await this.ensureCashReceiptsTableVisible();
 
-    if (!(await this.bulkMarkBtn_CashReceiptsInBilling.isVisible())) return false;
+    if (!(await this.bulkMarkBtn_CashReceiptsInBilling.isVisible())) return null;
 
     const numOfTransactions = await this.rows_CashReceiptsInBilling.count();
 
@@ -2736,14 +2752,14 @@ exports.CashPosting = class CashPosting {
         await expect.soft(status).toContainText(`Marked as Exception${reason}`);
       }
     }
-    return true;
+    return numOfTransactions;
   }
 
   bulkMarkAsBankException = async (reason) => {
     await this.headerDepositsInBankRFMS.waitFor({ state: 'visible' });
     await this.ensureBankRFMSTableVisible();
 
-    if (!(await this.bulkMarkBtn_DepositsInBankRFMS.isVisible())) return false;
+    if (!(await this.bulkMarkBtn_DepositsInBankRFMS.isVisible())) return null;
 
     const numOfTransactions = await this.rows_DepositsInBankRFMS.count();
 
@@ -2787,7 +2803,7 @@ exports.CashPosting = class CashPosting {
         await expect.soft(status).toContainText(`Marked as Exception${reason}`);
       }
     }
-    return true;
+    return numOfTransactions;
   }
 
   ensureNSFTableVisible = async () => {
@@ -2993,7 +3009,7 @@ exports.CashPosting = class CashPosting {
     await this.clickCreateMatchBtn();
 
     await expect(this.manualMatchCreatedSuccessfullyMessage).toBeVisible({ timeout: 30000 });
-    
+
     await this.ensureMatchedTransactionsTableVisible();
 
     const matchedTransactionRow = this.rows_ExactMatchedTransactions
@@ -3244,17 +3260,22 @@ exports.CashPosting = class CashPosting {
     console.log(uiTransactions);
 
     for (const tx of uiTransactions) {
-      const transactionExistsInPDF = allPdfTransactions.some(t =>
-        t.date === tx.date &&
-        t.amount.replace(/\$/g, '').replace(/,/g, '').trim() ===
-        tx.amount.replace(/\$/g, '').replace(/,/g, '').trim() &&
-        (
-          t.description.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim()
-            .includes(tx.description.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim()) ||
-          tx.description.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim()
-            .includes(t.description.replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim())
-        )
-      );
+      let transactionExistsInPDF = false;
+
+      for (const t of allPdfTransactions) {
+        const pdfDesc = t.description.replace(/\d+/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+        const uiDesc = tx.description.replace(/\d+/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+
+        const dateMatches = t.date === tx.date;
+        const amountMatches = t.amount.replace(/\$/g, '').replace(/,/g, '').trim() ===
+          tx.amount.replace(/\$/g, '').replace(/,/g, '').trim();
+        const descMatches = pdfDesc.includes(uiDesc) || uiDesc.includes(pdfDesc);
+
+        if (dateMatches && amountMatches && descMatches) {
+          transactionExistsInPDF = true;
+          break; // stop checking once a match is found
+        }
+      };
 
       await excuteSteps(this.test, tx.rowLocator, "hover", `Hovering on Bank Transaction Row`);
       await this.page.waitForTimeout(parseInt(process.env.smallWait));

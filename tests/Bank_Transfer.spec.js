@@ -17,9 +17,10 @@ test("Mark as Bank Transfer", async ({ page }) => {
     for (let i = 0; i < cardCount; i++) {
         await cashPosting.reconciliationCards.nth(i).click();
 
-        const details = await cashPosting.markAsBankTransfer();
-        if (details) {
-            return; // exit loop once marked transfer
+        const transactionDetails = await cashPosting.markAsBankTransfer();
+        if (transactionDetails) {
+            console.log(`Marked as Bank Transfer`);
+            return;
         }
     }
 })
@@ -30,12 +31,11 @@ test("Unmark as Bank Transfer", async ({ page }) => {
     const cardCount = await cashPosting.reconciliationCards.count();
     for (let i = 0; i < cardCount; i++) {
         await cashPosting.reconciliationCards.nth(i).click();
-        const isUnmarked = await cashPosting.unmarkAsBankTransfer();
-        if (isUnmarked) {
-            // If the transfer was successfully unmarked, exit the loop
+
+        const transactionDetails = await cashPosting.unmarkAsBankTransfer();
+        if (transactionDetails) {
+            console.log(`Unmarked as Bank Transfer`);
             return;
-        } else {
-            continue; // Continue to next card if unmark transfer was not done
         }
     }
 })
@@ -46,12 +46,12 @@ test("Bulk Mark as Bank Transfer", async ({ page }) => {
     const cardCount = await cashPosting.reconciliationCards.count();
     for (let i = 0; i < cardCount; i++) {
         await cashPosting.reconciliationCards.nth(i).click();
-        const bulkMarked = await cashPosting.bulkMarkAsBankTransfer();
-        if (bulkMarked) {
-            // If transfers were successfully bulk marked, exit the loop
+
+        const numOfTransactions = await cashPosting.bulkMarkAsBankTransfer();
+        if (numOfTransactions) {
+            console.log(`Marked ${transactionDetails} as Bank Transfer`)
+            console.log(`Bulk marked ${numOfTransactions} transactions as Bank Transfer`);
             return;
-        } else {
-            continue; // Continue to next card if bulk transfer was not done
         }
     }
 })

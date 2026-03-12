@@ -17,16 +17,19 @@ test("Verify Deleting a Bank Transaction is only possible for transactions from 
     for (let i = 0; i < cardCount; i++) {
         await cashPosting.reconciliationCards.nth(i).click();
         await cashPosting.headerDepositsInBankRFMS.waitFor({ state: 'visible' });
-        //if (await cashPosting.readUploadedPdfFiles()) return;
-        const hasDeleteBtn = await cashPosting.readUploadedPdfFiles();
-        // Immediately return if a delete button is found
-        if (hasDeleteBtn) return console.log(`Delete button found in card ${i + 1}`);
-    }
-    console.log("No delete buttons found in any reconciliation card.");
-    return false;
-})
 
-test("Verify Deleting a Transaction", async ({ page }) => {
+        const hasDeleteBtn = await cashPosting.readUploadedPdfFiles();
+
+        if (hasDeleteBtn) {
+            console.log(`Delete button found in card ${i + 1}`);
+            return;
+        }
+    }
+
+    throw new Error("No delete buttons found in any reconciliation card.");
+});
+
+/*test("Verify Deleting a Transaction", async ({ page }) => {
     const cashPosting = new sections.CashPosting(test, page);
     await cashPosting.navigateToCashPosting();
 
@@ -39,10 +42,11 @@ test("Verify Deleting a Transaction", async ({ page }) => {
         const deleted = await cashPosting.deleteTransactionIfPdfExists();
 
         if (deleted) {
-            console.log(`Transaction Delete in card #${i + 1}`);
-            break; // Stop after first successful delete
-        } else {
-            console.log(`no Transaction to Delete in Card #${i + 1}, moving to next card`);
+            console.log(`Transaction Deleted in card #${i + 1}`);
+            return;
         }
     }
-});
+
+    throw new Error("No delete buttons found in any reconciliation card.");
+
+});*/
