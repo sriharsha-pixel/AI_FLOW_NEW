@@ -3263,17 +3263,16 @@ exports.CashPosting = class CashPosting {
       let transactionExistsInPDF = false;
 
       for (const t of allPdfTransactions) {
-        const pdfDesc = t.description.replace(/\d+/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
-        const uiDesc = tx.description.replace(/\d+/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+        const pdfDesc = this.normalizeText(t.description);
+        const uiDesc = this.normalizeText(tx.description);
 
         const dateMatches = t.date === tx.date;
-        const amountMatches = t.amount.replace(/\$/g, '').replace(/,/g, '').trim() ===
-          tx.amount.replace(/\$/g, '').replace(/,/g, '').trim();
+        const amountMatches = t.amount.replace(/[$,]/g, '') === tx.amount.replace(/[$,]/g, '');
         const descMatches = pdfDesc.includes(uiDesc) || uiDesc.includes(pdfDesc);
 
         if (dateMatches && amountMatches && descMatches) {
           transactionExistsInPDF = true;
-          break; // stop checking once a match is found
+          break;
         }
       };
 
@@ -3295,6 +3294,15 @@ exports.CashPosting = class CashPosting {
 
     return deleteBtnFoundInCard;
   };
+
+  normalizeText = (text) => {
+    return text
+      .toLowerCase()
+      .replace(/\d+/g, '')        // remove numbers
+      .replace(/[^a-z\s]/g, '')   // remove symbols
+      .replace(/\s+/g, ' ')       // normalize spaces
+      .trim();
+  }
 
   extractTransactions = async (pdfText) => {
     const pdfTransactions = [];
