@@ -3285,10 +3285,11 @@ exports.CashPosting = class CashPosting {
       if (transactionExistsInPDF) {
         console.log(`${tx.description} -> Transaction coming from PDF -> Delete allowed`);
         await expect(deleteBtn).toBeVisible();
+        await expect(deleteBtn).toBeEnabled();
         deleteBtnFoundInCard = true;
       } else {
         console.log(`${tx.description} -> Transaction not coming from PDF -> Delete NOT allowed`);
-        await expect(deleteBtn).toBeHidden();
+        await expect(deleteBtn).not.toBeVisible();
       }
     }
 

@@ -28,25 +28,3 @@ test("Verify Deleting a Bank Transaction is only possible for transactions from 
 
     throw new Error("No delete buttons found in any reconciliation card.");
 });
-
-/*test("Verify Deleting a Transaction", async ({ page }) => {
-    const cashPosting = new sections.CashPosting(test, page);
-    await cashPosting.navigateToCashPosting();
-
-    const cardCount = await cashPosting.reconciliationCards.count();
-
-    for (let i = 0; i < cardCount; i++) {
-        await cashPosting.reconciliationCards.nth(i).click();
-        await cashPosting.headerDepositsInBankRFMS.waitFor({ state: 'visible' });
-
-        const deleted = await cashPosting.deleteTransactionIfPdfExists();
-
-        if (deleted) {
-            console.log(`Transaction Deleted in card #${i + 1}`);
-            return;
-        }
-    }
-
-    throw new Error("No delete buttons found in any reconciliation card.");
-
-});*/

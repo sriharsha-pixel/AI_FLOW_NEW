@@ -138,8 +138,6 @@ test("Comparing Stage Env Data with Prod Env Data", async ({ page }) => {
 
   await page.waitForTimeout(parseInt(process.env.mediumWait));
   await cashPosting.clickOnFirstCard();
-  //await page.waitForTimeout(parseInt(process.env.mediumWait));
-  //await cashPosting.totalTransaction.waitFor({ state: 'visible' });
   await cashPosting.gettingBandFeedDetailsAndCompareProd(testEnvDatareload, "Bank Feed Analysis", mismatchFileDatabase);
   await cashPosting.gettingBandFeedDetailsBIllingSystemAnalysisAndCompareProd(testEnvDatareload, "BankSystemAnalysis", mismatchFileDatabase);
   await cashPosting.gettingBandFeedDetailsTotalMatchesFoundAndCompareProd(testEnvDatareload, "TotalMatchesFound_BSA", mismatchFileDatabase);
